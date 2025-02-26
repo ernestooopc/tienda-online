@@ -1,10 +1,25 @@
 <div class="container">
-  <p class="text-center text-warning">Listado de Productos</p>
+  <h2 class="text-center text-warning">Listado de Productos</h2>
+  <ul class="list-group w-50 mx-auto">
+    @for(producto of productos; track productos){
+      <li class="list-group-item text-center">
+        {{producto.description}} - ${{producto.precio}}
+      </li>
+    }
+  </ul>
+
+  <div class="mt-3 d-flex justify-content-center px-2">
+    <input type="text" #descripcionProductoInput class="form-contro mb-2 w-50" placeholder="Descripcion Producto">
+    <input type="number" #precioProductoInput class="form-contro mb-2 w-50 ms-3" placeholder="Precio">
+  </div>
+  <button class="btn btn-primary mt-3 "
+    (click)="agregarProducto(descripcionProductoInput.value, + precioProductoInput.value);
+            descripcionProductoInput.value=''; precioProductoInput.value=''">
+    Agregar Producto
+  </button>
+
+
 </div>
 
-
-<app-producto/>
-<app-producto/>
-<app-producto/>
 
 
