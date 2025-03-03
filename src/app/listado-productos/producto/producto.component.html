@@ -1,5 +1,6 @@
-<section>
-  <div class="container text-center">
-      <p>Descripción:{{producto.description}}, $/{{producto.price}}</p>
-  </div>
-</section>
+<li class="list-group-item text-center">
+  {{producto.description}}, ${{producto.precio}}
+  <button type="submit" class="btn btn-info ms-4" (click)="emitirDetalleProducto()">
+    Ver Detalle
+  </button>
+</li>

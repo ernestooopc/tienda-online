@@ -2,40 +2,32 @@ import { Component } from '@angular/core';
 import { Producto } from './model/producto-model';
 import { ProductoComponent } from './producto/producto.component';
 import { FormsModule } from '@angular/forms';
+import { FormularioProductoComponent } from "../formulario-producto/formulario-producto.component";
+import { ProductoService } from '../producto.service';
 
 @Component({
   selector: 'app-listado-productos',
-  imports: [ProductoComponent,FormsModule],
+  imports: [FormsModule, FormularioProductoComponent, ProductoComponent],
   templateUrl: './listado-productos.component.html',
   styleUrl: './listado-productos.component.css'
 })
 export class ListadoProductosComponent {
 
 
-  productos: Producto[] = [
-    new Producto('Producto1',110),
-    new Producto('Producto2',110),
-    new Producto('Producto3',110),
+  productos: Producto[] = [];
 
-  ];
-
-  descripcionInput:string = '';
-  precioInput: number | null = null;
-
-  agregarProducto(){
-    if(this.descripcionInput.trim() == '' || this.precioInput == null || this.precioInput <=0){
-      console.log("Debe ingresar una descripción y un precio validos")
-      return;
-    }
-
-    const producto = new Producto(this.descripcionInput,this.precioInput);
-    this.productos.push(producto);
-
-    //Limpiamos los campos del formulario
-    this.descripcionInput = '';
-    this.precioInput = null;
-
-
+  constructor(private productoService:ProductoService){
+    this.productoService.detalleProductoEmitter.subscribe((
+      producto:Producto
+    )=>alert(`Producto: ${producto.description}, S/${producto.precio}`))
   }
+
+  ngOnInit(){
+    this.productos = this.productoService.productos;
+  }
+
+
+
+
 
 }

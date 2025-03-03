@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Producto } from '../model/producto-model';
+import { ProductoService } from '../../producto.service';
 
 @Component({
   selector: 'app-producto',
@@ -8,8 +10,15 @@ import { Component } from '@angular/core';
 })
 export class ProductoComponent {
 
-  producto = {
-    description : 'Nuevo Producto',
-    price: 100
-  };
+
+
+  @Input() producto! : Producto;
+
+  constructor(private productoService : ProductoService){}
+
+
+  emitirDetalleProducto() {
+    this.productoService.detalleProductoEmitter.emit(this.producto);
+    }
+
 }
