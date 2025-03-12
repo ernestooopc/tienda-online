@@ -1,53 +1,66 @@
 import { Injectable } from '@angular/core';
 import { Producto } from './listado-productos/model/producto-model';
+import { DatosService } from './datos.service';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductoService {
 
-  //Variable para el ID siguiente y unico
-  private idSiguiente = 1
 
-  productos: Producto[] = []
+  productos: {[llave:string]:Producto} = {}
 
-  constructor(){
-    this.inicializarProductos()
+  //Observable para notificar cambios
+  productosActualizados = new Subject<{[llave:string]:Producto}>();
+
+  constructor(private datosService: DatosService){
+
   }
 
-  inicializarProductos(){
-    const producto1 = new Producto(this.idSiguiente++,'Pantalon',130.0);
-    const producto2 = new Producto(this.idSiguiente++,'Camisa',80.0);
-    const producto3 = new Producto(this.idSiguiente++,'Playera',50.0);
-    this.productos.push(producto1,producto2,producto3);
+  listarProducto(){
+    return this.datosService.listarProductos()
   }
+
 
 
 
     //Agregar o Motidicar un producto existente
-    guardarProducto(producto: Producto) {
-      if(producto.id === null){
-        producto.id = this.idSiguiente++;
-        this.productos.push(producto)
-      } else{ //Caso de Actualizar
-        const indice = this.productos.findIndex(p => p.id === producto.id);
-        if(indice !== -1){
-          this.productos[indice] = producto;
-        }
+    guardarProducto(producto: Producto, llave:string | null = null) {
+
+      if(llave === null){
+        //Caso agregar
+        this.datosService.guardarProducto(producto).subscribe(()=>{
+          this.refrescarProductos()
+        });
+      }else{
+        //Caso de actualizar
+        this.datosService.modificarProducto(producto, llave).subscribe(()=>{
+          this.refrescarProductos();
+        });
       }
+
     }
 
-    getProductoById(id:number):Producto | undefined {
-      return this.productos.find(producto => producto.id === id)
+    private refrescarProductos(){
+      this.listarProducto().subscribe((productos: {[llave:string]:Producto})=>{
+        this.setProductos(productos);
+      });
+    }
+
+    setProductos(productos: {[llave:string]:Producto}){
+      this.productos = productos;
+      this.productosActualizados.next(this.productos); //Nos permite emitir la actualizacion de la lista
+    }
+
+    getProductoByLlave(llave:string):Producto | undefined {
+      return this.productos[llave];
     }
 
 
-    eliminarProducto(id:number){
-      const indice = this.productos.findIndex(producto => producto.id === id);
-      if (indice !== -1) {
-        this.productos.splice(indice,1)
-      }
+    eliminarProducto(llave:string){
+      this.datosService.eliminarProducto(llave).subscribe(()=>{
+        this.refrescarProductos();
+      });
     }
-
-
 }
